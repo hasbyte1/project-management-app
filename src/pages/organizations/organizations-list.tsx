@@ -22,6 +22,8 @@ export function OrganizationsPage() {
     );
   }
 
+  console.log({ organizations });
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">

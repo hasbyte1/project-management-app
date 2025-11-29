@@ -10,12 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
-import { Route as OrganizationsRouteImport } from './routes/organizations'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as OrganizationsOrganizationIdRouteImport } from './routes/organizations/$organizationId'
-import { Route as OrganizationsOrganizationIdProjectsRouteImport } from './routes/organizations/$organizationId/projects'
-import { Route as OrganizationsOrganizationIdProjectsProjectIdRouteImport } from './routes/organizations/$organizationId/projects/$projectId'
+import { Route as OrganizationsIndexRouteImport } from './routes/organizations/index'
+import { Route as OrganizationsOrganizationIdIndexRouteImport } from './routes/organizations/$organizationId/index'
+import { Route as OrganizationsOrganizationIdProjectsIndexRouteImport } from './routes/organizations/$organizationId/projects/index'
+import { Route as OrganizationsOrganizationIdProjectsProjectIdIndexRouteImport } from './routes/organizations/$organizationId/projects/$projectId/index'
 import { Route as OrganizationsOrganizationIdProjectsProjectIdListRouteImport } from './routes/organizations/$organizationId/projects/$projectId/list'
 import { Route as OrganizationsOrganizationIdProjectsProjectIdBoardRouteImport } from './routes/organizations/$organizationId/projects/$projectId/board'
 import { Route as OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRouteImport } from './routes/organizations/$organizationId/projects/$projectId/tasks/$taskId'
@@ -23,11 +23,6 @@ import { Route as OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRouteIm
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrganizationsRoute = OrganizationsRouteImport.update({
-  id: '/organizations',
-  path: '/organizations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -40,78 +35,83 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OrganizationsOrganizationIdRoute =
-  OrganizationsOrganizationIdRouteImport.update({
-    id: '/$organizationId',
-    path: '/$organizationId',
-    getParentRoute: () => OrganizationsRoute,
+const OrganizationsIndexRoute = OrganizationsIndexRouteImport.update({
+  id: '/organizations/',
+  path: '/organizations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizationsOrganizationIdIndexRoute =
+  OrganizationsOrganizationIdIndexRouteImport.update({
+    id: '/organizations/$organizationId/',
+    path: '/organizations/$organizationId/',
+    getParentRoute: () => rootRouteImport,
   } as any)
-const OrganizationsOrganizationIdProjectsRoute =
-  OrganizationsOrganizationIdProjectsRouteImport.update({
-    id: '/projects',
-    path: '/projects',
-    getParentRoute: () => OrganizationsOrganizationIdRoute,
+const OrganizationsOrganizationIdProjectsIndexRoute =
+  OrganizationsOrganizationIdProjectsIndexRouteImport.update({
+    id: '/organizations/$organizationId/projects/',
+    path: '/organizations/$organizationId/projects/',
+    getParentRoute: () => rootRouteImport,
   } as any)
-const OrganizationsOrganizationIdProjectsProjectIdRoute =
-  OrganizationsOrganizationIdProjectsProjectIdRouteImport.update({
-    id: '/$projectId',
-    path: '/$projectId',
-    getParentRoute: () => OrganizationsOrganizationIdProjectsRoute,
+const OrganizationsOrganizationIdProjectsProjectIdIndexRoute =
+  OrganizationsOrganizationIdProjectsProjectIdIndexRouteImport.update({
+    id: '/organizations/$organizationId/projects/$projectId/',
+    path: '/organizations/$organizationId/projects/$projectId/',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const OrganizationsOrganizationIdProjectsProjectIdListRoute =
   OrganizationsOrganizationIdProjectsProjectIdListRouteImport.update({
-    id: '/list',
-    path: '/list',
-    getParentRoute: () => OrganizationsOrganizationIdProjectsProjectIdRoute,
+    id: '/organizations/$organizationId/projects/$projectId/list',
+    path: '/organizations/$organizationId/projects/$projectId/list',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const OrganizationsOrganizationIdProjectsProjectIdBoardRoute =
   OrganizationsOrganizationIdProjectsProjectIdBoardRouteImport.update({
-    id: '/board',
-    path: '/board',
-    getParentRoute: () => OrganizationsOrganizationIdProjectsProjectIdRoute,
+    id: '/organizations/$organizationId/projects/$projectId/board',
+    path: '/organizations/$organizationId/projects/$projectId/board',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute =
   OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRouteImport.update({
-    id: '/tasks/$taskId',
-    path: '/tasks/$taskId',
-    getParentRoute: () => OrganizationsOrganizationIdProjectsProjectIdRoute,
+    id: '/organizations/$organizationId/projects/$projectId/tasks/$taskId',
+    path: '/organizations/$organizationId/projects/$projectId/tasks/$taskId',
+    getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/organizations': typeof OrganizationsRouteWithChildren
   '/register': typeof RegisterRoute
-  '/organizations/$organizationId': typeof OrganizationsOrganizationIdRouteWithChildren
-  '/organizations/$organizationId/projects': typeof OrganizationsOrganizationIdProjectsRouteWithChildren
-  '/organizations/$organizationId/projects/$projectId': typeof OrganizationsOrganizationIdProjectsProjectIdRouteWithChildren
+  '/organizations': typeof OrganizationsIndexRoute
+  '/organizations/$organizationId': typeof OrganizationsOrganizationIdIndexRoute
+  '/organizations/$organizationId/projects': typeof OrganizationsOrganizationIdProjectsIndexRoute
   '/organizations/$organizationId/projects/$projectId/board': typeof OrganizationsOrganizationIdProjectsProjectIdBoardRoute
   '/organizations/$organizationId/projects/$projectId/list': typeof OrganizationsOrganizationIdProjectsProjectIdListRoute
+  '/organizations/$organizationId/projects/$projectId': typeof OrganizationsOrganizationIdProjectsProjectIdIndexRoute
   '/organizations/$organizationId/projects/$projectId/tasks/$taskId': typeof OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/organizations': typeof OrganizationsRouteWithChildren
   '/register': typeof RegisterRoute
-  '/organizations/$organizationId': typeof OrganizationsOrganizationIdRouteWithChildren
-  '/organizations/$organizationId/projects': typeof OrganizationsOrganizationIdProjectsRouteWithChildren
-  '/organizations/$organizationId/projects/$projectId': typeof OrganizationsOrganizationIdProjectsProjectIdRouteWithChildren
+  '/organizations': typeof OrganizationsIndexRoute
+  '/organizations/$organizationId': typeof OrganizationsOrganizationIdIndexRoute
+  '/organizations/$organizationId/projects': typeof OrganizationsOrganizationIdProjectsIndexRoute
   '/organizations/$organizationId/projects/$projectId/board': typeof OrganizationsOrganizationIdProjectsProjectIdBoardRoute
   '/organizations/$organizationId/projects/$projectId/list': typeof OrganizationsOrganizationIdProjectsProjectIdListRoute
+  '/organizations/$organizationId/projects/$projectId': typeof OrganizationsOrganizationIdProjectsProjectIdIndexRoute
   '/organizations/$organizationId/projects/$projectId/tasks/$taskId': typeof OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/organizations': typeof OrganizationsRouteWithChildren
   '/register': typeof RegisterRoute
-  '/organizations/$organizationId': typeof OrganizationsOrganizationIdRouteWithChildren
-  '/organizations/$organizationId/projects': typeof OrganizationsOrganizationIdProjectsRouteWithChildren
-  '/organizations/$organizationId/projects/$projectId': typeof OrganizationsOrganizationIdProjectsProjectIdRouteWithChildren
+  '/organizations/': typeof OrganizationsIndexRoute
+  '/organizations/$organizationId/': typeof OrganizationsOrganizationIdIndexRoute
+  '/organizations/$organizationId/projects/': typeof OrganizationsOrganizationIdProjectsIndexRoute
   '/organizations/$organizationId/projects/$projectId/board': typeof OrganizationsOrganizationIdProjectsProjectIdBoardRoute
   '/organizations/$organizationId/projects/$projectId/list': typeof OrganizationsOrganizationIdProjectsProjectIdListRoute
+  '/organizations/$organizationId/projects/$projectId/': typeof OrganizationsOrganizationIdProjectsProjectIdIndexRoute
   '/organizations/$organizationId/projects/$projectId/tasks/$taskId': typeof OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute
 }
 export interface FileRouteTypes {
@@ -119,45 +119,51 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
-    | '/organizations'
     | '/register'
+    | '/organizations'
     | '/organizations/$organizationId'
     | '/organizations/$organizationId/projects'
-    | '/organizations/$organizationId/projects/$projectId'
     | '/organizations/$organizationId/projects/$projectId/board'
     | '/organizations/$organizationId/projects/$projectId/list'
+    | '/organizations/$organizationId/projects/$projectId'
     | '/organizations/$organizationId/projects/$projectId/tasks/$taskId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
-    | '/organizations'
     | '/register'
+    | '/organizations'
     | '/organizations/$organizationId'
     | '/organizations/$organizationId/projects'
-    | '/organizations/$organizationId/projects/$projectId'
     | '/organizations/$organizationId/projects/$projectId/board'
     | '/organizations/$organizationId/projects/$projectId/list'
+    | '/organizations/$organizationId/projects/$projectId'
     | '/organizations/$organizationId/projects/$projectId/tasks/$taskId'
   id:
     | '__root__'
     | '/'
     | '/login'
-    | '/organizations'
     | '/register'
-    | '/organizations/$organizationId'
-    | '/organizations/$organizationId/projects'
-    | '/organizations/$organizationId/projects/$projectId'
+    | '/organizations/'
+    | '/organizations/$organizationId/'
+    | '/organizations/$organizationId/projects/'
     | '/organizations/$organizationId/projects/$projectId/board'
     | '/organizations/$organizationId/projects/$projectId/list'
+    | '/organizations/$organizationId/projects/$projectId/'
     | '/organizations/$organizationId/projects/$projectId/tasks/$taskId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
-  OrganizationsRoute: typeof OrganizationsRouteWithChildren
   RegisterRoute: typeof RegisterRoute
+  OrganizationsIndexRoute: typeof OrganizationsIndexRoute
+  OrganizationsOrganizationIdIndexRoute: typeof OrganizationsOrganizationIdIndexRoute
+  OrganizationsOrganizationIdProjectsIndexRoute: typeof OrganizationsOrganizationIdProjectsIndexRoute
+  OrganizationsOrganizationIdProjectsProjectIdBoardRoute: typeof OrganizationsOrganizationIdProjectsProjectIdBoardRoute
+  OrganizationsOrganizationIdProjectsProjectIdListRoute: typeof OrganizationsOrganizationIdProjectsProjectIdListRoute
+  OrganizationsOrganizationIdProjectsProjectIdIndexRoute: typeof OrganizationsOrganizationIdProjectsProjectIdIndexRoute
+  OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute: typeof OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -167,13 +173,6 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/organizations': {
-      id: '/organizations'
-      path: '/organizations'
-      fullPath: '/organizations'
-      preLoaderRoute: typeof OrganizationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -190,120 +189,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/organizations/$organizationId': {
-      id: '/organizations/$organizationId'
-      path: '/$organizationId'
+    '/organizations/': {
+      id: '/organizations/'
+      path: '/organizations'
+      fullPath: '/organizations'
+      preLoaderRoute: typeof OrganizationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/organizations/$organizationId/': {
+      id: '/organizations/$organizationId/'
+      path: '/organizations/$organizationId'
       fullPath: '/organizations/$organizationId'
-      preLoaderRoute: typeof OrganizationsOrganizationIdRouteImport
-      parentRoute: typeof OrganizationsRoute
+      preLoaderRoute: typeof OrganizationsOrganizationIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/organizations/$organizationId/projects': {
-      id: '/organizations/$organizationId/projects'
-      path: '/projects'
+    '/organizations/$organizationId/projects/': {
+      id: '/organizations/$organizationId/projects/'
+      path: '/organizations/$organizationId/projects'
       fullPath: '/organizations/$organizationId/projects'
-      preLoaderRoute: typeof OrganizationsOrganizationIdProjectsRouteImport
-      parentRoute: typeof OrganizationsOrganizationIdRoute
+      preLoaderRoute: typeof OrganizationsOrganizationIdProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/organizations/$organizationId/projects/$projectId': {
-      id: '/organizations/$organizationId/projects/$projectId'
-      path: '/$projectId'
+    '/organizations/$organizationId/projects/$projectId/': {
+      id: '/organizations/$organizationId/projects/$projectId/'
+      path: '/organizations/$organizationId/projects/$projectId'
       fullPath: '/organizations/$organizationId/projects/$projectId'
-      preLoaderRoute: typeof OrganizationsOrganizationIdProjectsProjectIdRouteImport
-      parentRoute: typeof OrganizationsOrganizationIdProjectsRoute
+      preLoaderRoute: typeof OrganizationsOrganizationIdProjectsProjectIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/organizations/$organizationId/projects/$projectId/list': {
       id: '/organizations/$organizationId/projects/$projectId/list'
-      path: '/list'
+      path: '/organizations/$organizationId/projects/$projectId/list'
       fullPath: '/organizations/$organizationId/projects/$projectId/list'
       preLoaderRoute: typeof OrganizationsOrganizationIdProjectsProjectIdListRouteImport
-      parentRoute: typeof OrganizationsOrganizationIdProjectsProjectIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/organizations/$organizationId/projects/$projectId/board': {
       id: '/organizations/$organizationId/projects/$projectId/board'
-      path: '/board'
+      path: '/organizations/$organizationId/projects/$projectId/board'
       fullPath: '/organizations/$organizationId/projects/$projectId/board'
       preLoaderRoute: typeof OrganizationsOrganizationIdProjectsProjectIdBoardRouteImport
-      parentRoute: typeof OrganizationsOrganizationIdProjectsProjectIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/organizations/$organizationId/projects/$projectId/tasks/$taskId': {
       id: '/organizations/$organizationId/projects/$projectId/tasks/$taskId'
-      path: '/tasks/$taskId'
+      path: '/organizations/$organizationId/projects/$projectId/tasks/$taskId'
       fullPath: '/organizations/$organizationId/projects/$projectId/tasks/$taskId'
       preLoaderRoute: typeof OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRouteImport
-      parentRoute: typeof OrganizationsOrganizationIdProjectsProjectIdRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface OrganizationsOrganizationIdProjectsProjectIdRouteChildren {
-  OrganizationsOrganizationIdProjectsProjectIdBoardRoute: typeof OrganizationsOrganizationIdProjectsProjectIdBoardRoute
-  OrganizationsOrganizationIdProjectsProjectIdListRoute: typeof OrganizationsOrganizationIdProjectsProjectIdListRoute
-  OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute: typeof OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute
-}
-
-const OrganizationsOrganizationIdProjectsProjectIdRouteChildren: OrganizationsOrganizationIdProjectsProjectIdRouteChildren =
-  {
-    OrganizationsOrganizationIdProjectsProjectIdBoardRoute:
-      OrganizationsOrganizationIdProjectsProjectIdBoardRoute,
-    OrganizationsOrganizationIdProjectsProjectIdListRoute:
-      OrganizationsOrganizationIdProjectsProjectIdListRoute,
-    OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute:
-      OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute,
-  }
-
-const OrganizationsOrganizationIdProjectsProjectIdRouteWithChildren =
-  OrganizationsOrganizationIdProjectsProjectIdRoute._addFileChildren(
-    OrganizationsOrganizationIdProjectsProjectIdRouteChildren,
-  )
-
-interface OrganizationsOrganizationIdProjectsRouteChildren {
-  OrganizationsOrganizationIdProjectsProjectIdRoute: typeof OrganizationsOrganizationIdProjectsProjectIdRouteWithChildren
-}
-
-const OrganizationsOrganizationIdProjectsRouteChildren: OrganizationsOrganizationIdProjectsRouteChildren =
-  {
-    OrganizationsOrganizationIdProjectsProjectIdRoute:
-      OrganizationsOrganizationIdProjectsProjectIdRouteWithChildren,
-  }
-
-const OrganizationsOrganizationIdProjectsRouteWithChildren =
-  OrganizationsOrganizationIdProjectsRoute._addFileChildren(
-    OrganizationsOrganizationIdProjectsRouteChildren,
-  )
-
-interface OrganizationsOrganizationIdRouteChildren {
-  OrganizationsOrganizationIdProjectsRoute: typeof OrganizationsOrganizationIdProjectsRouteWithChildren
-}
-
-const OrganizationsOrganizationIdRouteChildren: OrganizationsOrganizationIdRouteChildren =
-  {
-    OrganizationsOrganizationIdProjectsRoute:
-      OrganizationsOrganizationIdProjectsRouteWithChildren,
-  }
-
-const OrganizationsOrganizationIdRouteWithChildren =
-  OrganizationsOrganizationIdRoute._addFileChildren(
-    OrganizationsOrganizationIdRouteChildren,
-  )
-
-interface OrganizationsRouteChildren {
-  OrganizationsOrganizationIdRoute: typeof OrganizationsOrganizationIdRouteWithChildren
-}
-
-const OrganizationsRouteChildren: OrganizationsRouteChildren = {
-  OrganizationsOrganizationIdRoute:
-    OrganizationsOrganizationIdRouteWithChildren,
-}
-
-const OrganizationsRouteWithChildren = OrganizationsRoute._addFileChildren(
-  OrganizationsRouteChildren,
-)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
-  OrganizationsRoute: OrganizationsRouteWithChildren,
   RegisterRoute: RegisterRoute,
+  OrganizationsIndexRoute: OrganizationsIndexRoute,
+  OrganizationsOrganizationIdIndexRoute: OrganizationsOrganizationIdIndexRoute,
+  OrganizationsOrganizationIdProjectsIndexRoute:
+    OrganizationsOrganizationIdProjectsIndexRoute,
+  OrganizationsOrganizationIdProjectsProjectIdBoardRoute:
+    OrganizationsOrganizationIdProjectsProjectIdBoardRoute,
+  OrganizationsOrganizationIdProjectsProjectIdListRoute:
+    OrganizationsOrganizationIdProjectsProjectIdListRoute,
+  OrganizationsOrganizationIdProjectsProjectIdIndexRoute:
+    OrganizationsOrganizationIdProjectsProjectIdIndexRoute,
+  OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute:
+    OrganizationsOrganizationIdProjectsProjectIdTasksTaskIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

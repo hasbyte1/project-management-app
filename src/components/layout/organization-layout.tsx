@@ -4,7 +4,7 @@ import { useParams } from '@tanstack/react-router';
 import { organizationsApi } from '@/api/organizations';
 
 export function OrganizationLayout() {
-  const { organizationId } = useParams({ from: '/organizations/$organizationId' });
+  const { organizationId } = useParams({ from: '/organizations/$organizationId/' });
 
   const { data: organization } = useQuery({
     queryKey: ['organization', organizationId],

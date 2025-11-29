@@ -8,7 +8,7 @@ import { CreateProjectDialog } from '@/components/projects/create-project-dialog
 import { FolderKanban, Plus } from 'lucide-react';
 
 export function ProjectsPage() {
-  const { organizationId } = useParams({ from: '/organizations/$organizationId/projects' });
+  const { organizationId } = useParams({ from: '/organizations/$organizationId/projects/' });
   const navigate = useNavigate();
 
   const { data: projects, isLoading } = useQuery({

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/hasbyte1/project-management-app/internal/models"
@@ -124,17 +123,17 @@ func (s *projectService) createDefaultStatuses(ctx context.Context, projectID uu
 		{"Done", "#10b981", 5, false, true},
 	}
 
-	for _, s := range statuses {
+	for _, st := range statuses {
 		status := &models.TaskStatus{
 			Base: models.Base{
 				ID: uuid.New(),
 			},
 			ProjectID:   projectID,
-			Name:        s.name,
-			Color:       s.color,
-			Position:    s.position,
-			IsDefault:   s.isDefault,
-			IsCompleted: s.isCompleted,
+			Name:        st.name,
+			Color:       st.color,
+			Position:    st.position,
+			IsDefault:   st.isDefault,
+			IsCompleted: st.isCompleted,
 		}
 
 		if err := s.taskRepo.CreateStatus(ctx, status); err != nil {

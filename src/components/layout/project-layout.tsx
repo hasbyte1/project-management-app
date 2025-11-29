@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { LayoutList, LayoutGrid, Calendar, Settings } from 'lucide-react';
 
 export function ProjectLayout() {
-  const { organizationId, projectId } = useParams({ from: '/organizations/$organizationId/projects/$projectId' });
+  const { organizationId, projectId } = useParams({ from: '/organizations/$organizationId/projects/$projectId/' });
   const navigate = useNavigate();
 
   const { data: project } = useQuery({

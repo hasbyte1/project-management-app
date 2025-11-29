@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // Auth DTOs
@@ -49,6 +50,17 @@ type AddOrganizationMemberRequest struct {
 }
 
 // Project DTOs
+
+type ProjectFilters struct {
+	OrganizationIDs []uuid.UUID `json:"organization_ids,omitempty"`
+	TeamIDs         []uuid.UUID `json:"team_ids,omitempty"`
+	Key             string      `json:"assignee_id,omitempty"`
+	Search          string      `json:"search,omitempty"`
+	Visibility      string      `json:"visibility,omitempty"`
+	StartDate       *time.Time  `json:"start_date,omitempty"`
+	DueDate         *time.Time  `json:"due_date,omitempty"`
+}
+
 type CreateProjectRequest struct {
 	OrganizationID uuid.UUID  `json:"organization_id" validate:"required"`
 	TeamID         *uuid.UUID `json:"team_id,omitempty"`
@@ -106,13 +118,13 @@ type UpdateTaskRequest struct {
 }
 
 type TaskFilters struct {
-	StatusIDs  []uuid.UUID `json:"status_id,omitempty"`
+	StatusIDs   []uuid.UUID `json:"status_id,omitempty"`
 	AssigneeIDs []uuid.UUID `json:"assignee_id,omitempty"`
-	Priorities []string    `json:"priority,omitempty"`
-	Labels     []uuid.UUID `json:"labels,omitempty"`
-	Search     string      `json:"search,omitempty"`
-	DueDateFrom *time.Time `json:"due_date_from,omitempty"`
-	DueDateTo  *time.Time `json:"due_date_to,omitempty"`
+	Priorities  []string    `json:"priority,omitempty"`
+	Labels      []uuid.UUID `json:"labels,omitempty"`
+	Search      string      `json:"search,omitempty"`
+	DueDateFrom *time.Time  `json:"due_date_from,omitempty"`
+	DueDateTo   *time.Time  `json:"due_date_to,omitempty"`
 }
 
 // TaskStatus DTOs

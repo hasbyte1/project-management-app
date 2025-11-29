@@ -24,7 +24,7 @@ type TaskRepository interface {
 	// Status management
 	GetStatuses(ctx context.Context, projectID uuid.UUID) ([]models.TaskStatus, error)
 	CreateStatus(ctx context.Context, status *models.TaskStatus) error
-	UpdateStatus(ctx context.Context, status *models.TaskStatus) error
+	UpdateTaskStatus(ctx context.Context, status *models.TaskStatus) error
 	DeleteStatus(ctx context.Context, id uuid.UUID) error
 
 	// Comments
@@ -304,7 +304,7 @@ func (r *taskRepository) CreateStatus(ctx context.Context, status *models.TaskSt
 	return err
 }
 
-func (r *taskRepository) UpdateStatus(ctx context.Context, status *models.TaskStatus) error {
+func (r *taskRepository) UpdateTaskStatus(ctx context.Context, status *models.TaskStatus) error {
 	query := `
 		UPDATE task_statuses
 		SET name = $1, color = $2, position = $3, is_default = $4,

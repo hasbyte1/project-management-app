@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/hasbyte1/project-management-app/internal/models"
@@ -38,18 +37,18 @@ func (s *taskService) Create(ctx context.Context, req *models.CreateTaskRequest,
 	}
 
 	task := &models.Task{
-		Base:           models.Base{ID: uuid.New()},
-		ProjectID:      req.ProjectID,
-		ParentTaskID:   uuid.NullUUID{Valid: req.ParentTaskID != nil},
-		Title:          req.Title,
-		TaskNumber:     taskNumber,
-		StatusID:       req.StatusID,
-		Priority:       "none",
-		ReporterID:     userID,
-		CreatedBy:      userID,
-		ActualHours:    0,
-		Position:       float64(taskNumber),
-		CustomFields:   []byte("{}"),
+		Base:         models.Base{ID: uuid.New()},
+		ProjectID:    req.ProjectID,
+		ParentTaskID: uuid.NullUUID{Valid: req.ParentTaskID != nil},
+		Title:        req.Title,
+		TaskNumber:   taskNumber,
+		StatusID:     req.StatusID,
+		Priority:     "none",
+		ReporterID:   userID,
+		CreatedBy:    userID,
+		ActualHours:  0,
+		Position:     float64(taskNumber),
+		CustomFields: []byte("{}"),
 	}
 
 	if req.ParentTaskID != nil {
