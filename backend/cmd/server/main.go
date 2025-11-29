@@ -61,10 +61,14 @@ func main() {
 
 	// Initialize services
 	authService := service.NewAuthService(userRepo, tokenManager)
+	orgService := service.NewOrganizationService(orgRepo, userRepo)
+	projectService := service.NewProjectService(projectRepo, taskRepo)
 	taskService := service.NewTaskService(taskRepo)
 
 	// Initialize handlers
 	authHandler := handler.NewAuthHandler(authService)
+	orgHandler := handler.NewOrganizationHandler(orgService)
+	projectHandler := handler.NewProjectHandler(projectService)
 	taskHandler := handler.NewTaskHandler(taskService)
 
 	// Initialize middleware
@@ -102,6 +106,34 @@ func main() {
 			// Auth
 			r.Get("/auth/me", authHandler.GetCurrentUser)
 
+			// Organizations
+			r.Post("/organizations", orgHandler.Create)
+			r.Get("/organizations", orgHandler.List)
+			r.Get("/organizations/{organizationId}", orgHandler.GetByID)
+			r.Patch("/organizations/{organizationId}", orgHandler.Update)
+			r.Delete("/organizations/{organizationId}", orgHandler.Delete)
+
+			// Organization members
+			r.Get("/organizations/{organizationId}/members", orgHandler.GetMembers)
+			r.Post("/organizations/{organizationId}/members", orgHandler.AddMember)
+			r.Patch("/organizations/{organizationId}/members/{memberId}", orgHandler.UpdateMemberRole)
+			r.Delete("/organizations/{organizationId}/members/{memberId}", orgHandler.RemoveMember)
+
+			// Projects
+			r.Post("/projects", projectHandler.Create)
+			r.Get("/organizations/{organizationId}/projects", projectHandler.List)
+			r.Get("/projects/{projectId}", projectHandler.GetByID)
+			r.Patch("/projects/{projectId}", projectHandler.Update)
+			r.Delete("/projects/{projectId}", projectHandler.Delete)
+			r.Post("/projects/{projectId}/archive", projectHandler.Archive)
+			r.Post("/projects/{projectId}/unarchive", projectHandler.Unarchive)
+
+			// Project members
+			r.Get("/projects/{projectId}/members", projectHandler.GetMembers)
+			r.Post("/projects/{projectId}/members", projectHandler.AddMember)
+			r.Patch("/projects/{projectId}/members/{memberId}", projectHandler.UpdateMemberRole)
+			r.Delete("/projects/{projectId}/members/{memberId}", projectHandler.RemoveMember)
+
 			// Tasks
 			r.Post("/tasks", taskHandler.Create)
 			r.Get("/tasks/{taskId}", taskHandler.GetByID)
@@ -113,7 +145,7 @@ func main() {
 			r.Get("/tasks/{taskId}/comments", taskHandler.GetComments)
 			r.Post("/tasks/{taskId}/comments", taskHandler.CreateComment)
 
-			// Project tasks
+			// Project tasks and statuses
 			r.Get("/projects/{projectId}/tasks", taskHandler.List)
 			r.Get("/projects/{projectId}/statuses", taskHandler.GetStatuses)
 			r.Post("/projects/{projectId}/statuses", taskHandler.CreateStatus)
