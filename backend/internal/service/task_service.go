@@ -11,7 +11,7 @@ import (
 type TaskService interface {
 	Create(ctx context.Context, req *models.CreateTaskRequest, userID uuid.UUID) (*models.Task, error)
 	GetByID(ctx context.Context, id uuid.UUID) (*models.Task, error)
-	List(ctx context.Context, projectID uuid.UUID, filters *models.TaskFilters) ([]models.Task, error)
+	List(ctx context.Context, projectID uuid.UUID, filters *models.TaskFilters) ([]models.TaskDTO, error)
 	Update(ctx context.Context, id uuid.UUID, req *models.UpdateTaskRequest) (*models.Task, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	UpdateStatus(ctx context.Context, id uuid.UUID, statusID uuid.UUID) (*models.Task, error)
@@ -94,8 +94,18 @@ func (s *taskService) GetByID(ctx context.Context, id uuid.UUID) (*models.Task, 
 	return s.taskRepo.GetByID(ctx, id)
 }
 
-func (s *taskService) List(ctx context.Context, projectID uuid.UUID, filters *models.TaskFilters) ([]models.Task, error) {
-	return s.taskRepo.List(ctx, projectID, filters)
+func (s *taskService) List(ctx context.Context, projectID uuid.UUID, filters *models.TaskFilters) ([]models.TaskDTO, error) {
+	rows, err := s.taskRepo.List(ctx, projectID, filters)
+	if err != nil {
+		return nil, err
+	}
+
+	var tasks []models.TaskDTO
+	for _, row := range rows {
+		tasks = append(tasks, *models.TransformTaskToDTO(row))
+	}
+
+	return tasks, nil
 }
 
 func (s *taskService) Update(ctx context.Context, id uuid.UUID, req *models.UpdateTaskRequest) (*models.Task, error) {

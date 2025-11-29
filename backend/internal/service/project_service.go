@@ -13,7 +13,7 @@ import (
 type ProjectService interface {
 	Create(ctx context.Context, req *models.CreateProjectRequest, userID uuid.UUID) (*models.Project, error)
 	GetByID(ctx context.Context, id uuid.UUID) (*models.Project, error)
-	List(ctx context.Context, organizationID uuid.UUID) ([]models.Project, error)
+	List(ctx context.Context, organizationID uuid.UUID) ([]models.ProjectDTO, error)
 	Update(ctx context.Context, id uuid.UUID, req *models.UpdateProjectRequest) (*models.Project, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	Archive(ctx context.Context, id uuid.UUID) error
@@ -148,8 +148,17 @@ func (s *projectService) GetByID(ctx context.Context, id uuid.UUID) (*models.Pro
 	return s.projectRepo.GetByID(ctx, id)
 }
 
-func (s *projectService) List(ctx context.Context, organizationID uuid.UUID) ([]models.Project, error) {
-	return s.projectRepo.List(ctx, organizationID)
+func (s *projectService) List(ctx context.Context, organizationID uuid.UUID) ([]models.ProjectDTO, error) {
+	rows, err := s.projectRepo.List(ctx, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	result := []models.ProjectDTO{}
+	for _, row := range rows {
+		record := models.TransformProjectToDTO(row)
+		result = append(result, *record)
+	}
+	return result, nil
 }
 
 func (s *projectService) Update(ctx context.Context, id uuid.UUID, req *models.UpdateProjectRequest) (*models.Project, error) {

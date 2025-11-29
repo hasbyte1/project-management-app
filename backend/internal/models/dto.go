@@ -30,6 +30,19 @@ type RefreshTokenRequest struct {
 }
 
 // Organization DTOs
+
+type OrganizationDTO struct {
+	ID          string  `json:"id"`
+	ParentID    *string `json:"parent_id"`
+	Name        string  `json:"name"`
+	Slug        string  `json:"slug"`
+	Description *string `json:"description"`
+	LogoURL     *string `json:"logo_url"`
+	Depth       int     `json:"depth"`
+	Path        *string `json:"path"`
+	Settings    []byte  `json:"settings"`
+	CreatedBy   string  `json:"created_by"`
+}
 type CreateOrganizationRequest struct {
 	Name        string     `json:"name" validate:"required"`
 	Slug        string     `json:"slug" validate:"required,alphanum"`
@@ -59,6 +72,20 @@ type ProjectFilters struct {
 	Visibility      string      `json:"visibility,omitempty"`
 	StartDate       *time.Time  `json:"start_date,omitempty"`
 	DueDate         *time.Time  `json:"due_date,omitempty"`
+}
+
+type ProjectDTO struct {
+	ID             string     `json:"id"`
+	OrganizationID string     `json:"organization_id"`
+	TeamID         *string    `json:"team_id"`
+	Name           string     `json:"name"`
+	Description    *string    `json:"description"`
+	Key            *string    `json:"key"`
+	Color          *string    `json:"color"`
+	Icon           *string    `json:"icon"`
+	Visibility     string     `json:"visibility"`
+	StartDate      *time.Time `json:"start_date"`
+	DueDate        *time.Time `json:"due_date"`
 }
 
 type CreateProjectRequest struct {
@@ -91,6 +118,21 @@ type AddProjectMemberRequest struct {
 }
 
 // Task DTOs
+
+type TaskDTO struct {
+	ID             string     `json:"id"`
+	ProjectID      string     `json:"project_id"`
+	ParentTaskID   *string    `json:"parent_task_id"`
+	Title          string     `json:"title"`
+	Description    *string    `json:"description"`
+	StatusID       string     `json:"status_id"`
+	Priority       string     `json:"priority"`
+	AssigneeID     *string    `json:"assignee_id"`
+	StartDate      *time.Time `json:"start_date"`
+	DueDate        *time.Time `json:"due_date"`
+	EstimatedHours *float64   `json:"estimated_hours"`
+	CustomFields   *string    `json:"custom_fields"`
+}
 type CreateTaskRequest struct {
 	ProjectID      uuid.UUID  `json:"project_id" validate:"required"`
 	ParentTaskID   *uuid.UUID `json:"parent_task_id,omitempty"`
@@ -236,4 +278,63 @@ type ErrorResponse struct {
 	Success bool   `json:"success"`
 	Error   string `json:"error"`
 	Message string `json:"message,omitempty"`
+}
+
+func TransformTaskToDTO(task Task) *TaskDTO {
+	dto := &TaskDTO{
+		ID:        task.ID.String(),
+		Title:     task.Title,
+		StatusID:  task.StatusID.String(),
+		ProjectID: task.ProjectID.String(),
+		Priority:  task.Priority,
+	}
+	if task.Description.Valid {
+		dto.Description = &task.Description.String
+	}
+	if task.ParentTaskID.Valid {
+		val := task.ParentTaskID.UUID.String()
+		dto.ParentTaskID = &val
+	}
+	if task.AssigneeID.Valid {
+		val := task.AssigneeID.UUID.String()
+		dto.AssigneeID = &val
+	}
+	if task.StartDate.Valid {
+		dto.StartDate = &task.StartDate.Time
+	}
+	if task.DueDate.Valid {
+		dto.DueDate = &task.DueDate.Time
+	}
+	if task.EstimatedHours.Valid {
+		dto.EstimatedHours = &task.EstimatedHours.Float64
+	}
+	if len(task.CustomFields) > 0 {
+		val := string(task.CustomFields)
+		dto.CustomFields = &val
+	}
+	return dto
+}
+
+func TransformProjectToDTO(project Project) *ProjectDTO {
+	dto := &ProjectDTO{
+		ID:         project.ID.String(),
+		Name:       project.Name,
+		Visibility: project.Visibility,
+	}
+	if project.Description.Valid {
+		dto.Description = &project.Description.String
+	}
+	if project.Color.Valid {
+		dto.Color = &project.Color.String
+	}
+	if project.Icon.Valid {
+		dto.Icon = &project.Icon.String
+	}
+	if project.StartDate.Valid {
+		dto.StartDate = &project.StartDate.Time
+	}
+	if project.DueDate.Valid {
+		dto.DueDate = &project.DueDate.Time
+	}
+	return dto
 }

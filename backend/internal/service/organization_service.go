@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hasbyte1/project-management-app/internal/dto"
 	"github.com/hasbyte1/project-management-app/internal/models"
 	"github.com/hasbyte1/project-management-app/internal/repository"
 )
@@ -15,7 +14,7 @@ import (
 type OrganizationService interface {
 	Create(ctx context.Context, req *models.CreateOrganizationRequest, userID uuid.UUID) (*models.Organization, error)
 	GetByID(ctx context.Context, id uuid.UUID) (*models.Organization, error)
-	List(ctx context.Context, userID uuid.UUID) ([]dto.OrganizationDTO, error)
+	List(ctx context.Context, userID uuid.UUID) ([]models.OrganizationDTO, error)
 	Update(ctx context.Context, id uuid.UUID, req *models.UpdateOrganizationRequest) (*models.Organization, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	GetMembers(ctx context.Context, orgID uuid.UUID) ([]models.OrganizationMember, error)
@@ -114,15 +113,15 @@ func (s *organizationService) GetByID(ctx context.Context, id uuid.UUID) (*model
 	return s.orgRepo.GetByID(ctx, id)
 }
 
-func (s *organizationService) List(ctx context.Context, userID uuid.UUID) ([]dto.OrganizationDTO, error) {
+func (s *organizationService) List(ctx context.Context, userID uuid.UUID) ([]models.OrganizationDTO, error) {
 	orgs, err := s.orgRepo.List(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	var orgDTOs []dto.OrganizationDTO
+	var orgDTOs []models.OrganizationDTO
 	for _, org := range orgs {
-		row := dto.OrganizationDTO{
+		row := models.OrganizationDTO{
 			ID:        org.ID.String(),
 			Name:      org.Name,
 			Slug:      org.Slug,
