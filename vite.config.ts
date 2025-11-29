@@ -1,4 +1,5 @@
 import path from 'path'
+// @ts-ignore - @tailwindcss/vite doesn't have type definitions
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'

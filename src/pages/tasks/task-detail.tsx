@@ -23,7 +23,7 @@ import {
   Paperclip,
   Clock,
 } from 'lucide-react';
-import { getPriorityColor, getInitials, formatDate, formatDateTime } from '@/lib/utils';
+import { getInitials, formatDate, formatDateTime } from '@/lib/utils';
 import { useState } from 'react';
 import { toast } from 'sonner';
 

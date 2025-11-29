@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { organizationsApi } from '@/api/organizations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CreateOrganizationDialog } from '@/components/organizations/create-organization-dialog';
 import { Building2, Plus } from 'lucide-react';
 
 export function OrganizationsPage() {
@@ -30,10 +31,12 @@ export function OrganizationsPage() {
             Select an organization to get started
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          New Organization
-        </Button>
+        <CreateOrganizationDialog>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            New Organization
+          </Button>
+        </CreateOrganizationDialog>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -70,10 +73,12 @@ export function OrganizationsPage() {
           <p className="text-muted-foreground mt-2">
             Create your first organization to get started
           </p>
-          <Button className="mt-4">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Organization
-          </Button>
+          <CreateOrganizationDialog>
+            <Button className="mt-4">
+              <Plus className="mr-2 h-4 w-4" />
+              Create Organization
+            </Button>
+          </CreateOrganizationDialog>
         </div>
       )}
     </div>

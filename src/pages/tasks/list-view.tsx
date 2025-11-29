@@ -4,9 +4,9 @@ import { tasksApi } from '@/api/tasks';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { CreateTaskDialog } from '@/components/tasks/create-task-dialog';
 import { Plus } from 'lucide-react';
 import { getPriorityColor, getStatusColor, getInitials } from '@/lib/utils';
-import type { Task } from '@/types';
 
 export function ListView() {
   const { organizationId, projectId } = useParams({ from: '/organizations/$organizationId/projects/$projectId/list' });
@@ -29,10 +29,12 @@ export function ListView() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Tasks</h2>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          New Task
-        </Button>
+        <CreateTaskDialog projectId={projectId}>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            New Task
+          </Button>
+        </CreateTaskDialog>
       </div>
 
       <div className="bg-white rounded-lg border">
@@ -125,10 +127,12 @@ export function ListView() {
         {tasks?.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">No tasks found</p>
-            <Button className="mt-4">
-              <Plus className="mr-2 h-4 w-4" />
-              Create your first task
-            </Button>
+            <CreateTaskDialog projectId={projectId}>
+              <Button className="mt-4">
+                <Plus className="mr-2 h-4 w-4" />
+                Create your first task
+              </Button>
+            </CreateTaskDialog>
           </div>
         )}
       </div>

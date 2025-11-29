@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Plus, Clock, AlertCircle } from 'lucide-react';
+import { CreateTaskDialog } from '@/components/tasks/create-task-dialog';
+import { Plus, Clock } from 'lucide-react';
 import { getPriorityColor, getInitials } from '@/lib/utils';
 import {
   DndContext,
@@ -17,7 +18,6 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -193,9 +193,11 @@ export function BoardView() {
                         {statusTasks.length}
                       </Badge>
                     </div>
-                    <Button size="icon" variant="ghost" className="h-6 w-6">
-                      <Plus className="h-4 w-4" />
-                    </Button>
+                    <CreateTaskDialog projectId={projectId} defaultStatusId={status.id}>
+                      <Button size="icon" variant="ghost" className="h-6 w-6">
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </CreateTaskDialog>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">

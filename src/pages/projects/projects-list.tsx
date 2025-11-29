@@ -2,8 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { projectsApi } from '@/api/projects';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { CreateProjectDialog } from '@/components/projects/create-project-dialog';
 import { FolderKanban, Plus } from 'lucide-react';
 
 export function ProjectsPage() {
@@ -32,10 +33,12 @@ export function ProjectsPage() {
             Manage your projects and track progress
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          New Project
-        </Button>
+        <CreateProjectDialog organizationId={organizationId}>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            New Project
+          </Button>
+        </CreateProjectDialog>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -94,10 +97,12 @@ export function ProjectsPage() {
           <p className="text-muted-foreground mt-2">
             Create your first project to start managing tasks
           </p>
-          <Button className="mt-4">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Project
-          </Button>
+          <CreateProjectDialog organizationId={organizationId}>
+            <Button className="mt-4">
+              <Plus className="mr-2 h-4 w-4" />
+              Create Project
+            </Button>
+          </CreateProjectDialog>
         </div>
       )}
     </div>

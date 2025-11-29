@@ -86,7 +86,7 @@ export const tasksApi = {
     return response.data;
   },
 
-  updateStatus: async (statusId: UUID, data: Partial<TaskStatus>): Promise<TaskStatus> => {
+  updateTaskStatus: async (statusId: UUID, data: Partial<TaskStatus>): Promise<TaskStatus> => {
     const response = await apiClient.patch<TaskStatus>(`/statuses/${statusId}`, data);
     return response.data;
   },
