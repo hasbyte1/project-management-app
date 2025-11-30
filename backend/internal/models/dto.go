@@ -88,6 +88,15 @@ type ProjectDTO struct {
 	DueDate        *time.Time `json:"due_date"`
 }
 
+type ProjectMemberDTO struct {
+	ID        string  `json:"id"`
+	ProjectID string  `json:"project_id"`
+	UserID    string  `json:"user_id"`
+	Role      string  `json:"role"`
+	AddedBy   *string `json:"added_by"`
+	User      *User   `json:"user"`
+}
+
 type CreateProjectRequest struct {
 	OrganizationID uuid.UUID  `json:"organization_id" validate:"required"`
 	TeamID         *uuid.UUID `json:"team_id,omitempty"`
@@ -117,6 +126,19 @@ type AddProjectMemberRequest struct {
 	Role   string    `json:"role" validate:"required,oneof=owner editor viewer"`
 }
 
+type UserDTO struct {
+	ID            string     `json:"id"`
+	Email         string     `json:"email"`
+	FirstName     string     `json:"first_name"`
+	LastName      string     `json:"last_name"`
+	AvatarURL     *string    `json:"avatar_url"`
+	Timezone      string     `json:"timezone"`
+	Locale        string     `json:"locale"`
+	EmailVerified bool       `json:"email_verified"`
+	IsActive      bool       `json:"is_active"`
+	LastLoginAt   *time.Time `json:"last_login_at"`
+}
+
 // Task DTOs
 
 type TaskDTO struct {
@@ -132,6 +154,9 @@ type TaskDTO struct {
 	DueDate        *time.Time `json:"due_date"`
 	EstimatedHours *float64   `json:"estimated_hours"`
 	CustomFields   *string    `json:"custom_fields"`
+
+	Status   TaskStatusDTO `json:"status"`
+	Assignee UserDTO       `json:"assignee"`
 }
 type CreateTaskRequest struct {
 	ProjectID      uuid.UUID  `json:"project_id" validate:"required"`
@@ -280,8 +305,66 @@ type ErrorResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
-func TransformTaskToDTO(task Task) *TaskDTO {
-	dto := &TaskDTO{
+type TaskStatusDTO struct {
+	ID          string `json:"id"`
+	ProjectID   string `json:"project_id"`
+	Name        string `json:"name"`
+	Color       string `json:"color"`
+	Position    int    `json:"position"`
+	IsDefault   bool   `json:"is_default"`
+	IsCompleted bool   `json:"is_completed"`
+}
+
+func TransformTaskStatusToDTO(task TaskStatus) TaskStatusDTO {
+	dto := TaskStatusDTO{
+		ID:          task.ID.String(),
+		ProjectID:   task.ProjectID.String(),
+		Name:        task.Name,
+		Color:       task.Color,
+		Position:    task.Position,
+		IsDefault:   task.IsDefault,
+		IsCompleted: task.IsCompleted,
+	}
+	return dto
+}
+
+func TransformUserToDTO(user User) UserDTO {
+	dto := UserDTO{
+		ID:            user.ID.String(),
+		Email:         user.Email,
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Timezone:      user.Timezone,
+		Locale:        user.Locale,
+		EmailVerified: user.EmailVerified,
+		IsActive:      user.IsActive,
+	}
+	if user.AvatarURL.Valid {
+		dto.AvatarURL = &user.AvatarURL.String
+	}
+	if user.LastLoginAt.Valid {
+		dto.LastLoginAt = &user.LastLoginAt.Time
+	}
+	return dto
+}
+
+func TransformProjectMemberToDTO(record ProjectMember) ProjectMemberDTO {
+	dto := ProjectMemberDTO{
+		ID:        record.ID.String(),
+		ProjectID: record.ProjectID.String(),
+		UserID:    record.UserID.String(),
+		Role:      record.Role,
+		User:      record.User,
+	}
+	if record.AddedBy.Valid {
+		val := record.AddedBy.UUID.String()
+		dto.AddedBy = &val
+	}
+	return dto
+}
+
+func TransformTaskToDTO(task Task) TaskDTO {
+	dto := TaskDTO{
 		ID:        task.ID.String(),
 		Title:     task.Title,
 		StatusID:  task.StatusID.String(),
@@ -312,11 +395,17 @@ func TransformTaskToDTO(task Task) *TaskDTO {
 		val := string(task.CustomFields)
 		dto.CustomFields = &val
 	}
+	if task.Status != nil {
+		dto.Status = TransformTaskStatusToDTO(*task.Status)
+	}
+	if task.Assignee != nil {
+		dto.Assignee = TransformUserToDTO(*task.Assignee)
+	}
 	return dto
 }
 
-func TransformProjectToDTO(project Project) *ProjectDTO {
-	dto := &ProjectDTO{
+func TransformProjectToDTO(project Project) ProjectDTO {
+	dto := ProjectDTO{
 		ID:         project.ID.String(),
 		Name:       project.Name,
 		Visibility: project.Visibility,

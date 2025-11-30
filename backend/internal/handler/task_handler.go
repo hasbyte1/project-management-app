@@ -75,6 +75,10 @@ func (h *TaskHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if tasks == nil {
+		tasks = []models.TaskDTO{}
+	}
+
 	respondJSON(w, http.StatusOK, tasks)
 }
 

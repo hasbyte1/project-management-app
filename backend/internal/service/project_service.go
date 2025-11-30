@@ -11,15 +11,15 @@ import (
 )
 
 type ProjectService interface {
-	Create(ctx context.Context, req *models.CreateProjectRequest, userID uuid.UUID) (*models.Project, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*models.Project, error)
+	Create(ctx context.Context, req *models.CreateProjectRequest, userID uuid.UUID) (*models.ProjectDTO, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*models.ProjectDTO, error)
 	List(ctx context.Context, organizationID uuid.UUID) ([]models.ProjectDTO, error)
-	Update(ctx context.Context, id uuid.UUID, req *models.UpdateProjectRequest) (*models.Project, error)
+	Update(ctx context.Context, id uuid.UUID, req *models.UpdateProjectRequest) (*models.ProjectDTO, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	Archive(ctx context.Context, id uuid.UUID) error
 	Unarchive(ctx context.Context, id uuid.UUID) error
-	GetMembers(ctx context.Context, projectID uuid.UUID) ([]models.ProjectMember, error)
-	AddMember(ctx context.Context, projectID uuid.UUID, req *models.AddProjectMemberRequest, addedBy uuid.UUID) (*models.ProjectMember, error)
+	GetMembers(ctx context.Context, projectID uuid.UUID) ([]models.ProjectMemberDTO, error)
+	AddMember(ctx context.Context, projectID uuid.UUID, req *models.AddProjectMemberRequest, addedBy uuid.UUID) (*models.ProjectMemberDTO, error)
 	UpdateMemberRole(ctx context.Context, memberID uuid.UUID, role string) error
 	RemoveMember(ctx context.Context, memberID uuid.UUID) error
 }
@@ -36,7 +36,7 @@ func NewProjectService(projectRepo repository.ProjectRepository, taskRepo reposi
 	}
 }
 
-func (s *projectService) Create(ctx context.Context, req *models.CreateProjectRequest, userID uuid.UUID) (*models.Project, error) {
+func (s *projectService) Create(ctx context.Context, req *models.CreateProjectRequest, userID uuid.UUID) (*models.ProjectDTO, error) {
 	project := &models.Project{
 		Base: models.Base{
 			ID: uuid.New(),
@@ -105,7 +105,14 @@ func (s *projectService) Create(ctx context.Context, req *models.CreateProjectRe
 		return nil, fmt.Errorf("failed to create default statuses: %w", err)
 	}
 
-	return project, nil
+	project, err := s.projectRepo.GetByID(ctx, project.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get created project: %w", err)
+	}
+
+	dto := models.TransformProjectToDTO(*project)
+
+	return &dto, nil
 }
 
 func (s *projectService) createDefaultStatuses(ctx context.Context, projectID uuid.UUID) error {
@@ -144,8 +151,13 @@ func (s *projectService) createDefaultStatuses(ctx context.Context, projectID uu
 	return nil
 }
 
-func (s *projectService) GetByID(ctx context.Context, id uuid.UUID) (*models.Project, error) {
-	return s.projectRepo.GetByID(ctx, id)
+func (s *projectService) GetByID(ctx context.Context, id uuid.UUID) (*models.ProjectDTO, error) {
+	record, err := s.projectRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	dto := models.TransformProjectToDTO(*record)
+	return &dto, nil
 }
 
 func (s *projectService) List(ctx context.Context, organizationID uuid.UUID) ([]models.ProjectDTO, error) {
@@ -156,12 +168,12 @@ func (s *projectService) List(ctx context.Context, organizationID uuid.UUID) ([]
 	result := []models.ProjectDTO{}
 	for _, row := range rows {
 		record := models.TransformProjectToDTO(row)
-		result = append(result, *record)
+		result = append(result, record)
 	}
 	return result, nil
 }
 
-func (s *projectService) Update(ctx context.Context, id uuid.UUID, req *models.UpdateProjectRequest) (*models.Project, error) {
+func (s *projectService) Update(ctx context.Context, id uuid.UUID, req *models.UpdateProjectRequest) (*models.ProjectDTO, error) {
 	project, err := s.projectRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -203,7 +215,13 @@ func (s *projectService) Update(ctx context.Context, id uuid.UUID, req *models.U
 		return nil, err
 	}
 
-	return s.projectRepo.GetByID(ctx, id)
+	record, err := s.projectRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := models.TransformProjectToDTO(*record)
+	return &dto, nil
 }
 
 func (s *projectService) Delete(ctx context.Context, id uuid.UUID) error {
@@ -218,11 +236,20 @@ func (s *projectService) Unarchive(ctx context.Context, id uuid.UUID) error {
 	return s.projectRepo.Unarchive(ctx, id)
 }
 
-func (s *projectService) GetMembers(ctx context.Context, projectID uuid.UUID) ([]models.ProjectMember, error) {
-	return s.projectRepo.GetMembers(ctx, projectID)
+func (s *projectService) GetMembers(ctx context.Context, projectID uuid.UUID) ([]models.ProjectMemberDTO, error) {
+	record, err := s.projectRepo.GetMembers(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+	result := []models.ProjectMemberDTO{}
+	for _, row := range record {
+		record := models.TransformProjectMemberToDTO(row)
+		result = append(result, record)
+	}
+	return result, nil
 }
 
-func (s *projectService) AddMember(ctx context.Context, projectID uuid.UUID, req *models.AddProjectMemberRequest, addedBy uuid.UUID) (*models.ProjectMember, error) {
+func (s *projectService) AddMember(ctx context.Context, projectID uuid.UUID, req *models.AddProjectMemberRequest, addedBy uuid.UUID) (*models.ProjectMemberDTO, error) {
 	// Check if already a member
 	members, err := s.projectRepo.GetMembers(ctx, projectID)
 	if err != nil {
@@ -249,7 +276,9 @@ func (s *projectService) AddMember(ctx context.Context, projectID uuid.UUID, req
 		return nil, err
 	}
 
-	return member, nil
+	dto := models.TransformProjectMemberToDTO(*member)
+
+	return &dto, nil
 }
 
 func (s *projectService) UpdateMemberRole(ctx context.Context, memberID uuid.UUID, role string) error {

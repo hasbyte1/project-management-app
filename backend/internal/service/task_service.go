@@ -9,14 +9,14 @@ import (
 )
 
 type TaskService interface {
-	Create(ctx context.Context, req *models.CreateTaskRequest, userID uuid.UUID) (*models.Task, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*models.Task, error)
+	Create(ctx context.Context, req *models.CreateTaskRequest, userID uuid.UUID) (*models.TaskDTO, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*models.TaskDTO, error)
 	List(ctx context.Context, projectID uuid.UUID, filters *models.TaskFilters) ([]models.TaskDTO, error)
-	Update(ctx context.Context, id uuid.UUID, req *models.UpdateTaskRequest) (*models.Task, error)
+	Update(ctx context.Context, id uuid.UUID, req *models.UpdateTaskRequest) (*models.TaskDTO, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	UpdateStatus(ctx context.Context, id uuid.UUID, statusID uuid.UUID) (*models.Task, error)
-	GetStatuses(ctx context.Context, projectID uuid.UUID) ([]models.TaskStatus, error)
-	CreateStatus(ctx context.Context, projectID uuid.UUID, req *models.CreateTaskStatusRequest) (*models.TaskStatus, error)
+	UpdateStatus(ctx context.Context, id uuid.UUID, statusID uuid.UUID) (*models.TaskDTO, error)
+	GetStatuses(ctx context.Context, projectID uuid.UUID) ([]models.TaskStatusDTO, error)
+	CreateStatus(ctx context.Context, projectID uuid.UUID, req *models.CreateTaskStatusRequest) (*models.TaskStatusDTO, error)
 	GetComments(ctx context.Context, taskID uuid.UUID) ([]models.Comment, error)
 	CreateComment(ctx context.Context, taskID uuid.UUID, req *models.CreateCommentRequest, userID uuid.UUID) (*models.Comment, error)
 }
@@ -29,7 +29,7 @@ func NewTaskService(taskRepo repository.TaskRepository) TaskService {
 	return &taskService{taskRepo: taskRepo}
 }
 
-func (s *taskService) Create(ctx context.Context, req *models.CreateTaskRequest, userID uuid.UUID) (*models.Task, error) {
+func (s *taskService) Create(ctx context.Context, req *models.CreateTaskRequest, userID uuid.UUID) (*models.TaskDTO, error) {
 	// Get next task number
 	taskNumber, err := s.taskRepo.GetNextTaskNumber(ctx, req.ProjectID)
 	if err != nil {
@@ -87,11 +87,23 @@ func (s *taskService) Create(ctx context.Context, req *models.CreateTaskRequest,
 		return nil, err
 	}
 
-	return s.taskRepo.GetByID(ctx, task.ID)
+	record, err := s.taskRepo.GetByID(ctx, task.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := models.TransformTaskToDTO(*record)
+	return &dto, nil
 }
 
-func (s *taskService) GetByID(ctx context.Context, id uuid.UUID) (*models.Task, error) {
-	return s.taskRepo.GetByID(ctx, id)
+func (s *taskService) GetByID(ctx context.Context, id uuid.UUID) (*models.TaskDTO, error) {
+	record, err := s.taskRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	dto := models.TransformTaskToDTO(*record)
+
+	return &dto, nil
 }
 
 func (s *taskService) List(ctx context.Context, projectID uuid.UUID, filters *models.TaskFilters) ([]models.TaskDTO, error) {
@@ -102,13 +114,13 @@ func (s *taskService) List(ctx context.Context, projectID uuid.UUID, filters *mo
 
 	var tasks []models.TaskDTO
 	for _, row := range rows {
-		tasks = append(tasks, *models.TransformTaskToDTO(row))
+		tasks = append(tasks, models.TransformTaskToDTO(row))
 	}
 
 	return tasks, nil
 }
 
-func (s *taskService) Update(ctx context.Context, id uuid.UUID, req *models.UpdateTaskRequest) (*models.Task, error) {
+func (s *taskService) Update(ctx context.Context, id uuid.UUID, req *models.UpdateTaskRequest) (*models.TaskDTO, error) {
 	task, err := s.taskRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -158,25 +170,46 @@ func (s *taskService) Update(ctx context.Context, id uuid.UUID, req *models.Upda
 		return nil, err
 	}
 
-	return s.taskRepo.GetByID(ctx, task.ID)
+	record, err := s.taskRepo.GetByID(ctx, task.ID)
+	if err != nil {
+		return nil, err
+	}
+	dto := models.TransformTaskToDTO(*record)
+
+	return &dto, nil
 }
 
 func (s *taskService) Delete(ctx context.Context, id uuid.UUID) error {
 	return s.taskRepo.Delete(ctx, id)
 }
 
-func (s *taskService) UpdateStatus(ctx context.Context, id uuid.UUID, statusID uuid.UUID) (*models.Task, error) {
+func (s *taskService) UpdateStatus(ctx context.Context, id uuid.UUID, statusID uuid.UUID) (*models.TaskDTO, error) {
 	if err := s.taskRepo.UpdateStatus(ctx, id, statusID); err != nil {
 		return nil, err
 	}
-	return s.taskRepo.GetByID(ctx, id)
+	record, err := s.taskRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	dto := models.TransformTaskToDTO(*record)
+	return &dto, nil
 }
 
-func (s *taskService) GetStatuses(ctx context.Context, projectID uuid.UUID) ([]models.TaskStatus, error) {
-	return s.taskRepo.GetStatuses(ctx, projectID)
+func (s *taskService) GetStatuses(ctx context.Context, projectID uuid.UUID) ([]models.TaskStatusDTO, error) {
+	records, err := s.taskRepo.GetStatuses(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	var statuses []models.TaskStatusDTO
+	for _, record := range records {
+		statuses = append(statuses, models.TransformTaskStatusToDTO(record))
+	}
+
+	return statuses, nil
 }
 
-func (s *taskService) CreateStatus(ctx context.Context, projectID uuid.UUID, req *models.CreateTaskStatusRequest) (*models.TaskStatus, error) {
+func (s *taskService) CreateStatus(ctx context.Context, projectID uuid.UUID, req *models.CreateTaskStatusRequest) (*models.TaskStatusDTO, error) {
 	status := &models.TaskStatus{
 		Base:        models.Base{ID: uuid.New()},
 		ProjectID:   projectID,
@@ -191,7 +224,9 @@ func (s *taskService) CreateStatus(ctx context.Context, projectID uuid.UUID, req
 		return nil, err
 	}
 
-	return status, nil
+	dto := models.TransformTaskStatusToDTO(*status)
+
+	return &dto, nil
 }
 
 func (s *taskService) GetComments(ctx context.Context, taskID uuid.UUID) ([]models.Comment, error) {
